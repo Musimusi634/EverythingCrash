@@ -14,19 +14,18 @@ public class GenericTransformer {
     static boolean initialized = false;
 
     public static int transform(ClassNode classNode) {
+        if (classNode.name.equals("com/musimusi634/everythingcrash/transformer/Methods")) return ILaunchPluginService.ComputeFlags.NO_REWRITE;
         for (MethodNode method : classNode.methods) {
-            for (AbstractInsnNode Insn : method.instructions) {
-                InsnList instructions = new InsnList();
-                instructions.add(new MethodInsnNode(
-                        Opcodes.INVOKESTATIC,
-                        "com/musimusi634/everythingcrash/transformer/Methods",
-                        "crash",
-                        "()V",
-                        false
-                ));
-                method.instructions.insert(instructions);
-                break;
-            }
+            if ((method.access & (Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE)) != 0) continue;
+            InsnList instructions = new InsnList();
+            instructions.add(new MethodInsnNode(
+                    Opcodes.INVOKESTATIC,
+                    "com/musimusi634/everythingcrash/transformer/Methods",
+                    "crash",
+                    "()V",
+                    false
+            ));
+            method.instructions.insert(instructions);
         }
         return ILaunchPluginService.ComputeFlags.SIMPLE_REWRITE;
     }
